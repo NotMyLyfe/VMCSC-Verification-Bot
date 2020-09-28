@@ -70,7 +70,7 @@ passport.use(new OIDCStrategy(
 var app = express();
 
 app.use(session({
-  secret: 'your_secret_value_here',
+  secret: process.env.SECRET,
   resave: false,
   saveUninitialized: false,
   unset: 'destroy',
