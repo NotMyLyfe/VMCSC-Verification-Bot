@@ -1,3 +1,4 @@
+require('dotenv').config();
 const {discordServers, discordUsers} = require('./schema.js');
 const queryDb = require('./query.js');
 const client = require('./discordClient.js');
@@ -36,7 +37,7 @@ client.on('guildMemberAdd', async member =>{
         }
     }
     else{
-        member.send(`Welcome to ${member.guild.name}! To verify yourself, please click this link: ${redirectUrl}${member.id}`);
+        member.send(`Welcome to ${member.guild.name}! To verify yourself, please click this link: ${process.env.REDIRECT_URL}${member.id}`);
     }
 });
 
@@ -63,8 +64,13 @@ client.on('message', async msg => {
     }
     const messagePrefix = serverInfo.messagePrefix;
 
-    if(!msg.content.startsWith(messagePrefix) || (serverInfo.verificationChannels.length > 0 && !serverInfo.verificationChannels.includes(msg.channel.id))) return;
+    if(serverInfo.verificationChannels.length > 0 && !serverInfo.verificationChannels.includes(msg.channel.id)) return;
     
+    if(!msg.content.startsWith(messagePrefix) && !(msg.member.hasPermission('ADMINISTRATOR')) && !serverInfo.administratorRoles.some(val => msg.member._roles.includes(val))){
+        msg.delete();
+        return;
+    }
+
     const args = msg.content.slice(messagePrefix.length).trim().split(' ');
     const command = args.shift().toLowerCase();
     
@@ -96,6 +102,9 @@ client.on('message', async msg => {
         console.error(error);
         msg.reply('there was an error trying to execute that command!');
     }
+
+    if(!(msg.member.hasPermission('ADMINISTRATOR')) && !serverInfo.administratorRoles.some(val => msg.member._roles.includes(val)))
+        msg.delete();
 });
 
 queryDb();

@@ -1,5 +1,5 @@
+require('dotenv').config();
 const {discordUsers} = require('../schema.js');
-const data = require('../data.json');
 
 module.exports = {
     name: 'verify',
@@ -10,7 +10,7 @@ module.exports = {
         if(await discordUsers.findOne({discordId : message.member.id})) 
             message.member.send("You've already been verified by MasseyBot, no need to verify yourself again.");
         else 
-            message.member.send(`To verify yourself, please click this link: ${data.redirectUrl}${message.member.id} (Note that once you verify yourself once, all servers with MasseyBot will auto verify you)`);
+            message.member.send(`To verify yourself, please click this link: ${process.env.REDIRECT_URL}${message.member.id} (Note that once you verify yourself once, all servers with MasseyBot will auto verify you)`);
         return;
     }
 }
