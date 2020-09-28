@@ -66,8 +66,9 @@ client.on('message', async msg => {
 
     if(serverInfo.verificationChannels.length > 0 && !serverInfo.verificationChannels.includes(msg.channel.id)) return;
     
-    if(!msg.content.startsWith(messagePrefix) && !(msg.member.hasPermission('ADMINISTRATOR')) && !serverInfo.administratorRoles.some(val => msg.member._roles.includes(val))){
-        msg.delete();
+    if(!msg.content.startsWith(messagePrefix)){
+        if(!(msg.member.hasPermission('ADMINISTRATOR')) && !serverInfo.administratorRoles.some(val => msg.member._roles.includes(val)))
+            msg.delete();
         return;
     }
 
